@@ -270,7 +270,11 @@ echo 'export INPUTRC=/etc/inputrc' >> /etc/bash.bashrc
 
         tunnel = self.sandbox.tunnels()[self._vscode_port]
         tunnel_url = tunnel.url
-        self._vscode_url = tunnel_url + f'/?tkn={token}&folder={self.config.workspace_mount_path_in_sandbox}'
+        # Use the full tunnel URL as the host
+        from urllib.parse import urlparse
+        parsed_tunnel_url = urlparse(tunnel_url)
+        host = parsed_tunnel_url.netloc
+        self._vscode_url = f'{parsed_tunnel_url.scheme}://{host}/?tkn={token}&folder={self.config.workspace_mount_path_in_sandbox}'
 
         self.log(
             'debug',

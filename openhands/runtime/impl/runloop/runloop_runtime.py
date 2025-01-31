@@ -174,13 +174,15 @@ class RunloopRuntime(ActionExecutionClient):
             return None
         if not self.devbox:
             return None
-        self._vscode_url = (
-            self.runloop_api_client.devboxes.create_tunnel(
-                id=self.devbox.id,
-                port=self._vscode_port,
-            ).url
-            + f'/?tkn={token}&folder={self.config.workspace_mount_path_in_sandbox}'
-        )
+        # Use the full tunnel URL as the host
+        from urllib.parse import urlparse
+        tunnel_url = self.runloop_api_client.devboxes.create_tunnel(
+            id=self.devbox.id,
+            port=self._vscode_port,
+        ).url
+        parsed_tunnel_url = urlparse(tunnel_url)
+        host = parsed_tunnel_url.netloc
+        self._vscode_url = f'{parsed_tunnel_url.scheme}://{host}/?tkn={token}&folder={self.config.workspace_mount_path_in_sandbox}'
 
         self.log(
             'debug',

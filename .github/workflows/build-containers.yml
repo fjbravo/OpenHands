@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       base_image:
-        description: 'Build base container image'
+        description: 'Build app container image'
         type: boolean
         default: true
       runtime_image:
@@ -14,7 +14,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  BASE_IMAGE_NAME: openhands-base
+  BASE_IMAGE_NAME: openhands
   RUNTIME_IMAGE_NAME: openhands-runtime
 
 jobs:

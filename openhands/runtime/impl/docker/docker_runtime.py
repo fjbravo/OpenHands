@@ -389,7 +389,18 @@ class DockerRuntime(ActionExecutionClient):
         if not token:
             return None
 
-        vscode_url = f'http://localhost:{self._vscode_port}/?tkn={token}&folder={self.config.workspace_mount_path_in_sandbox}'
+        # Get container's IP address if not using host network
+        if not self.config.sandbox.use_host_network and self.container:
+            container_network = self.container.attrs['NetworkSettings']['Networks']
+            # Get the first network's IP address
+            network_name = next(iter(container_network))
+            container_ip = container_network[network_name]['IPAddress']
+            host = container_ip
+        else:
+            # If using host network, use localhost
+            host = 'localhost'
+
+        vscode_url = f'http://{host}:{self._vscode_port}/?tkn={token}&folder={self.config.workspace_mount_path_in_sandbox}'
         return vscode_url
 
     @property
